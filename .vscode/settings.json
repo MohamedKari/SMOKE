@@ -1,4 +1,5 @@
 {
     "python.linting.enabled": true,
-    "python.languageServer": "Jedi"
+    "python.languageServer": "Jedi",
+    "python.pythonPath": "/usr/local/anaconda3/envs/smoke/bin/python"
 }
