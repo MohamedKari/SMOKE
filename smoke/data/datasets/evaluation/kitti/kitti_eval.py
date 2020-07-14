@@ -40,19 +40,24 @@ def do_kitti_detection_evaluation(dataset,
     for image_id, prediction in predictions.items():
         predict_txt = image_id + '.txt'
         predict_txt = os.path.join(predict_folder, predict_txt)
-
+        
         generate_kitti_3d_detection(prediction, predict_txt)
 
     logger.info("Evaluate on KITTI dataset")
     output_dir = os.path.abspath(output_folder)
-    os.chdir('../smoke/data/datasets/evaluation/kitti/kitti_eval')
+
+    original_dir = os.getcwd()
+
+    os.chdir('./smoke/data/datasets/evaluation/kitti/kitti_eval')
     label_dir = getattr(dataset, 'label_dir')
-    if not os.path.isfile('evaluate_object_3d_offline'):
-        subprocess.Popen('g++ -O3 -DNDEBUG -o evaluate_object_3d_offline evaluate_object_3d_offline.cpp', shell=True)
-    command = "./evaluate_object_3d_offline {} {}".format(label_dir, output_dir)
-    output = subprocess.check_output(command, shell=True, universal_newlines=True).strip()
-    logger.info(output)
-    os.chdir('../tools')
+    if not os.path.isfile('evaluate_object_offline'):
+        subprocess.Popen('g++ -O3 -DNDEBUG -o evaluate_object_offline evaluate_object_offline.cpp', shell=True)
+    print(os.listdir())
+
+    #command = "./evaluate_object_offline {} {}".format("/app/datasets/kitti/training/label_2", output_dir)
+    #output = subprocess.check_output(command, shell=True, universal_newlines=True).strip()
+    #logger.info(output)
+    os.chdir(original_dir)
 
 
 def generate_kitti_3d_detection(prediction, predict_txt):
