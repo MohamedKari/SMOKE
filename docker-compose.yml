@@ -1,0 +1,16 @@
+version: "2.4"
+
+services:
+  smoke:
+    # build time
+    image: smoke
+    build:
+      context: .
+    # run time
+    runtime: nvidia # {nvidia | runc}
+    container_name: smoke
+    shm_size: 4gb
+    volumes: 
+      # - /home/ubuntu/kitti-detection:/app/datasets/kitti
+      - /home/ubuntu/kitti-track:/app/datasets/kitti
+      - /home/ubuntu/smoke:/app/tools/logs/inference/kitti_test/

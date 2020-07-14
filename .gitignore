@@ -4,4 +4,5 @@
 
 /tools/logs/
 
-.idea
+/kitti
+/output
