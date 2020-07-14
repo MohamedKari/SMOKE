@@ -1,0 +1,7 @@
+md5: f7543d915a38a92dcf5071e9e904ba0a
+outs:
+- md5: d4578a3c69b7af26256dcd215544b0b5
+  path: model_final.pth
+  cache: true
+  metric: false
+  persist: false
