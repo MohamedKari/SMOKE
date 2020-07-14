@@ -230,7 +230,7 @@ class KITTIDataset(Dataset):
             for line, row in enumerate(reader):
                 if row[0] == 'P2:':
                     K = row[1:]
-                    K = [float(i) for i in K]
+                    K = [float(i) for i in K if i.strip()]
                     K = np.array(K, dtype=np.float32).reshape(3, 4)
                     K = K[:3, :3]
                     break
