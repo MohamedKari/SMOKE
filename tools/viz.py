@@ -30,7 +30,10 @@ def get_input_data(image_input_dir: str, prediction_dir: str):
     prediction_paths = sorted(Path(prediction_dir).iterdir())
 
     if len(image_input_paths) != len(prediction_paths):
-        raise MatchingError("image_input_dir and prediction_dir have differeing numbers of child elements. Should be equal.")
+        raise MatchingError(
+            f"image_input_dir and prediction_dir have differing numbers of child elements"
+            f"{len(image_input_paths)} vs {len(prediction_paths)}"
+            f"Should be equal.")
 
     for image_path, prediction_path in zip(image_input_paths, prediction_paths):
         if image_path.stem != prediction_path.stem:
