@@ -12,5 +12,5 @@ services:
     shm_size: 4gb
     volumes: 
       # - /home/ubuntu/kitti-detection:/app/datasets/kitti
-      - /home/ubuntu/kitti-track:/app/datasets/kitti
-      - /home/ubuntu/smoke:/app/tools/logs/inference/kitti_test/
+      - /home/ubuntu/share/smoke/data/track:/app/datasets/kitti/testing
+      - /home/ubuntu/share/smoke/logs:/app/tools/logs/inference/kitti_test/
