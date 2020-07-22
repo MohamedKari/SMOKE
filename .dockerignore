@@ -2,3 +2,5 @@
 /output
 /3d-bounding-box-estimation-for-autonomous-driving
 /.dvc
+/.git
+track-1-pred.zip
