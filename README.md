@@ -85,6 +85,18 @@ python tools/plain_train_net.py --config-file "configs/smoke_gn_vector.yaml"
 We currently only support single GPU testing:
 ```
 python tools/plain_train_net.py --eval-only --config-file "configs/smoke_gn_vector.yaml"
+
+cd ./
+docker-machine scp -r "mo:~/share/smoke/data/track" kitti
+cd kitti 
+mv track testing
+cd ..
+mkdir -p output
+
+cd 3d-bounding-box-estimation-for-autonomous-driving
+python -m utils.visualization3Dbox
+
+python -m realtery.data.converter /Users/mo/code/computer-vision/SMOKE/output/viz
 ```
 
 ## Acknowledgement
