@@ -4,3 +4,6 @@
 [submodule "smoke/data/datasets/evaluation/kitti/kitti_eval_offline"]
 	path = smoke/data/datasets/evaluation/kitti/kitti_eval
 	url = https://github.com/lzccccc/kitti_eval_offline
+[submodule "realtery-protos"]
+	path = realtery-protos
+	url = https://github.com/MohamedKari/realtery-protos
