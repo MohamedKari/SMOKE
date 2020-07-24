@@ -29,7 +29,15 @@ COPY . .
 
 RUN cd /app/smoke/data/datasets/evaluation/kitti/kitti_eval && \
     g++ -O3 -DNDEBUG -o evaluate_object_offline evaluate_object_offline.cpp
-# RUN python setup.py build develop
 
-ENTRYPOINT [ "bash" ]
+
+
+# We use BuildKit, so that we can incorporate the weights into the build context.
+# However using BuildKit with Docker doesn't allow specifying the OCI runtime during the build phase.
+# Therefore, nvidia tooling is not available at image build time.
+# Thus, we build the CUDA classes at container run time. 
+
+# ENTRYPOINT [ "bash", "-c", "python setup.py build develop && bash" ]
+ENTRYPOINT [ "bash", "-c", "python setup.py build develop && python -m smoke.rpc.server" ]
+
 

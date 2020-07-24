@@ -14,3 +14,5 @@ services:
       # - /home/ubuntu/kitti-detection:/app/datasets/kitti
       - /home/ubuntu/share/smoke/data/track:/app/datasets/kitti/testing
       - /home/ubuntu/share/smoke/logs:/app/tools/logs/inference/kitti_test/
+    ports:
+      - "50052:50052"

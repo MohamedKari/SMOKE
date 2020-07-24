@@ -1,11 +1,9 @@
-from dataclasses import dataclass
 from io import BytesIO
+from dataclasses import dataclass
 
 import numpy as np
 import torch
 from PIL import Image
-
-from .viz import visualization
 
 from smoke.config import cfg
 from smoke.data.transforms import build_transforms
@@ -16,39 +14,8 @@ from smoke.structures.image_list import to_image_list
 from smoke.structures.params_3d import ParamsList
 from smoke.utils.check_point import DetectronCheckpointer
 
-@dataclass
-class Detection():
-    
-    detection_class: str
-    
-    # Trash
-    trash_1: str # truncated
-    trash_2: str # occluded
-    
-    # ?
-    alpha: float
-
-    # 2D Box
-    box2d_xmin: float
-    box2d_ymin: float
-    box2d_xmax: float
-    box2d_ymax: float
-
-    # Dimensions
-    height: float
-    width: float
-    length: float
-
-    # Location
-    location_x: float
-    location_y: float
-    location_z: float
-
-    # Rotation around y dimension
-    ry: float
-    
-    # Detection Score
-    threshold: float
+from .detection_info import DetectionInfo, get_camera_intrinsics
+from .viz import visualization
 
 @dataclass
 class ProgrammaticArgs():
@@ -57,8 +24,9 @@ class ProgrammaticArgs():
     num_gpus = 1
 
 class SmokeSession():
-    def __init__(self, K_3x3: np.ndarray):
-        self.K_3x3 = K_3x3
+    def __init__(self, K_3x4: np.ndarray):
+        self.K_3x4 = K_3x4
+        self.K_3x3 = K_3x4[:3, :3]        
 
         args = ProgrammaticArgs()
 
@@ -76,7 +44,7 @@ class SmokeSession():
 
         self.model.eval()
 
-    def detect(self, frame_id: int, frame_image: Image.Image) -> dict:
+    def detect(self, frame_id: int, frame_image: Image.Image) -> torch.Tensor:
 
         # KITTI specifics
         width = 1242.
@@ -131,37 +99,35 @@ class SmokeSession():
 
         return output
 
+    
+    def stop_session(self):
+        pass
+
+
 class VideoInference():
     pass
 
 
-def get_camera_intrinsics():
-    _K_3x4 = np.array(
-        [
-            [721.5377,  0.,         609.5593,   44.85728],      # pylint: disable=bad-whitespace
-            [0.,        721.5377,   172.854,    .2163791],      # pylint: disable=bad-whitespace
-            [0.,        0.,         1.,         .002745884]     # pylint: disable=bad-whitespace
-        ], 
-        dtype=np.float32
-    )
+if __name__ == "__main__":
 
-    return _K_3x4
+    K_3x4 = get_camera_intrinsics()
+    K_3x3 = K_3x4[:3, :3]
 
-K_3x4 = get_camera_intrinsics()
-K_3x3 = K_3x4[:3, :3]
+    smoke_session = SmokeSession(K_3x3)
 
-smoke_session = SmokeSession(K_3x3)
+    image_path = "/app/datasets/kitti/testing/image_2/000146.png"
+    image = Image.open(image_path)
 
-image_path = "/app/datasets/kitti/testing/image_2/000146.png"
-image = Image.open(image_path)
+    detection_output = smoke_session.detect(0, image)
+    figure_bytes, corners_2D = visualization(
+        image, 
+        K_3x4, 
+        [DetectionInfo.from_array(detection) for detection in detection_output])
+    
+    print("corners_2D of type", type(corners_2D), ":", corners_2D)
 
-detection_output = smoke_session.detect(0, image)
-figure_bytes, corners_2D = visualization(image, K_3x4, detection_output)
-print("corners_2D of type", type(corners_2D), ":", corners_2D)
-
-from pathlib import Path
-Path("/app/tools/logs/inference/kitti_test/image.jpg").write_bytes(figure_bytes)
+    from pathlib import Path
+    Path("/app/tools/logs/inference/kitti_test/image.jpg").write_bytes(figure_bytes)
 
 
-# RPC client & server
-# On-the-fly resizing
+    # On-the-fly resizing
