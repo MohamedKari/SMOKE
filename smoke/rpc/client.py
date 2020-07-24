@@ -111,6 +111,16 @@ class VehiclePoseDetectionClient():
 
         return detection_infos
 
+    def StopSession(self, session_id: int) -> None:
+        request = StopSessionRequest(
+            session_id=session_id)
+
+        response = self.stub.StopSession(request)
+        
+        if not isinstance(response, Empty):
+            raise UnexpectedResponseType()
+
+
 vehicle_pose_detection_client = VehiclePoseDetectionClient(
     "3.123.206.99",
     "50052",
@@ -120,18 +130,8 @@ vehicle_pose_detection_client = VehiclePoseDetectionClient(
 _session_id = vehicle_pose_detection_client.StartSession()
 
 _frame_image = Image.open(BytesIO(Path("kitti/testing/image_2/000015.png").read_bytes()))
+_frame_image = Image.open(BytesIO(Path("input.jpg").read_bytes()))
 _frame_image.show()
 _detection_infos = vehicle_pose_detection_client.Detect(_session_id, 0, _frame_image)
 
-_frame_image = Image.open(BytesIO(Path("kitti/testing/image_2/000020.png").read_bytes()))
-_frame_image.show()
-_detection_infos = vehicle_pose_detection_client.Detect(_session_id, 0, _frame_image)
-
-_frame_image = Image.open(BytesIO(Path("kitti/testing/image_2/000025.png").read_bytes()))
-_frame_image.show()
-_detection_infos = vehicle_pose_detection_client.Detect(_session_id, 0, _frame_image)
-
-
-_frame_image = Image.open(BytesIO(Path("kitti/testing/image_2/000030.png").read_bytes()))
-_frame_image.show()
-_detection_infos = vehicle_pose_detection_client.Detect(_session_id, 0, _frame_image)
+vehicle_pose_detection_client.StopSession(_session_id)

@@ -1,5 +1,5 @@
-from io import BytesIO
 from dataclasses import dataclass
+from typing import Tuple
 
 import numpy as np
 import torch
@@ -56,7 +56,6 @@ class SmokeSession():
         output_width = input_width // cfg.MODEL.BACKBONE.DOWN_RATIO
         output_height = input_height // cfg.MODEL.BACKBONE.DOWN_RATIO
 
-        # smoke/data/datasets/kitti.py#KITTIDataset.__get_item__
         center = np.array([i / 2 for i in frame_image.size], dtype=np.float32)
         size = np.array([i for i in frame_image.size], dtype=np.float32)
 
@@ -99,14 +98,8 @@ class SmokeSession():
 
         return output
 
-    
     def stop_session(self):
-        pass
-
-
-class VideoInference():
-    pass
-
+        del self.model
 
 if __name__ == "__main__":
 
