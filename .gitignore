@@ -7,3 +7,5 @@
 /kitti
 /output
 /.dvc
+
+*.pyc

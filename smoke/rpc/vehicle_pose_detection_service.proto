@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package com.porsche.realtery; 
+
+service VehiclePoseDetection {
+    rpc Ping (Empty) returns (Empty) {}
+    rpc StartSession (Empty) returns (StartSessionResponse) {}
+    rpc Detect (DetectRequest) returns (DetectResponse) {}
+    rpc StopSession (StopSessionRequest) returns (Empty) {}
+}
+
+message StartSessionResponse {
+    int32 session_id = 1;
+}
+
+message DetectRequest {
+    int32 session_id = 1;
+    int32 frame_id = 2;
+
+    // serialized jpg
+    bytes frame = 3;
+}
+
+message DetectResponse {
+    int32 session_id = 1;
+    int32 frame_id = 2;
+
+    repeated Detection detections = 3;
+}
+
+enum DetectionClass {
+    CAR         = 0;
+    CYCLIST     = 1;
+    PEDESTRIAN  = 2;
+}
+
+message Point {
+    int32 x = 1;
+    int32 y = 2;
+}
+
+message Box2D {
+    float xmin = 1;
+    float ymin = 2;
+    float xmax = 3;
+    float ymax = 4;
+}
+
+message Box3D {
+    float rotation = 1;
+    float location_x = 2;
+    float location_y = 3;
+    float location_z = 4;
+    float dimension_w = 5;
+    float dimension_l = 6;
+    float dimension_h = 7;
+    float score = 8;
+}
+
+message Box3DProjection {
+    Point p1 = 1;
+    Point p2 = 2;
+    Point p3 = 3;
+    Point p4 = 4;
+    Point p5 = 5;
+    Point p6 = 6;
+    Point p7 = 7;
+    Point p8 = 8;
+}
+
+message Detection {
+    DetectionClass detection_class = 1;
+    Box2D box_2D = 2;
+    Box3D box_3D = 3;
+    Box3DProjection box_3D_projection = 4;
+}
+
+message StopSessionRequest {
+    int32 session_id = 1;
+}
+
+message Empty {}
