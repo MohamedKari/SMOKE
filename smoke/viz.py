@@ -101,12 +101,10 @@ def draw_3Dbox(ax, corners_2D, detection_info: DetectionInfo, color):
     ax.add_patch(front_fill)
 
 def visualization(image: Image.Image, K_3x4: np.ndarray, detection_infos: List[DetectionInfo]) -> Tuple[bytes, List[List[Tuple[float, float]]]]:
-    fig = plt.figure(figsize=(20.00, 5.12), dpi=100)
-    gs = GridSpec(1, 4)
-    gs.update(wspace=0)  # set the spacing between axes.
 
-    ax = fig.add_subplot(gs[0, :3])
-    ax2 = fig.add_subplot(gs[0, 3:])
+    # TODO: Refactor to PIL instead of matplotlib.
+    fig1 = plt.figure(1, figsize=(20.00, 5.12), dpi=100)
+    fig2 = plt.figure(2, figsize=(20.00, 5.12), dpi=100)
 
     shape = 900
     birdimage = np.zeros((shape, shape, 3), np.uint8)
@@ -120,30 +118,40 @@ def visualization(image: Image.Image, K_3x4: np.ndarray, detection_infos: List[D
         }.get(int(detection_info.detection_class))
         
         corners_2D = compute_3Dbox(K_3x4, detection_info)
-        draw_3Dbox(ax, corners_2D, detection_info, color)
-        draw_birdeyes(ax2, detection_info, shape)
+        plt.figure(1)
+        draw_3Dbox(plt.gca(), corners_2D, detection_info, color)
+        plt.figure(2)
+        draw_birdeyes(plt.gca(), detection_info, shape)
 
         corners_2D_per_box.append(corners_2D)
 
     # visualize 3D bounding box
-    ax.imshow(image)
-    ax.set_xticks([]) #remove axis value
-    ax.set_yticks([])
+    plt.figure(1)
+    plt.gca().imshow(image)
+    plt.gca().set_xticks([]) #remove axis value
+    plt.gca().set_yticks([])
 
     # plot camera view range
+    plt.figure(2)
     x1 = np.linspace(0, shape / 2)
     x2 = np.linspace(shape / 2, shape)
-    ax2.plot(x1, shape / 2 - x1, ls='--', color='grey', linewidth=1, alpha=0.5)
-    ax2.plot(x2, x2 - shape / 2, ls='--', color='grey', linewidth=1, alpha=0.5)
-    ax2.plot(shape / 2, 0, marker='+', markersize=16, markeredgecolor='red')
+    plt.gca().plot(x1, shape / 2 - x1, ls='--', color='grey', linewidth=1, alpha=0.5)
+    plt.gca().plot(x2, x2 - shape / 2, ls='--', color='grey', linewidth=1, alpha=0.5)
+    plt.gca().plot(shape / 2, 0, marker='+', markersize=16, markeredgecolor='red')
 
     # visualize bird eye view
-    ax2.imshow(birdimage, origin='lower')
-    ax2.set_xticks([])
-    ax2.set_yticks([])
+    plt.gca().imshow(birdimage, origin='lower')
+    plt.gca().set_xticks([])
+    plt.gca().set_yticks([])
 
-    figure_bytesio = BytesIO()
-    fig.savefig(figure_bytesio, dpi=fig.dpi, bbox_inches='tight', pad_inches=0, format="jpg") 
-    figure_bytes = figure_bytesio.getvalue()
+    plt.figure(1)
+    figure1_bytesio = BytesIO()
+    fig1.savefig(figure1_bytesio, dpi=fig1.dpi, bbox_inches='tight', pad_inches=0, format="jpg") 
+    figure1_bytes = figure1_bytesio.getvalue()
+
+    plt.figure(2)
+    figure2_bytesio = BytesIO()
+    fig2.savefig(figure2_bytesio, dpi=fig2.dpi, bbox_inches='tight', pad_inches=0, format="jpg") 
+    figure2_bytes = figure2_bytesio.getvalue()
     
-    return figure_bytes, corners_2D_per_box
+    return figure1_bytes, figure2_bytes, corners_2D_per_box

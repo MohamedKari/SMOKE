@@ -82,7 +82,11 @@ class SmokeServicer(vehicle_pose_detection_service_pb2_grpc.VehiclePoseDetection
             self.total_session_counter += 1
             session_id = self.total_session_counter
 
-            self.sessions[session_id] = SmokeSession(get_camera_intrinsics())
+            # TODO: Send camera intrincs with RPC
+            kitti_height = 1242
+            kitti_width = 375
+
+            self.sessions[session_id] = SmokeSession(get_camera_intrinsics(375, 1242))
 
             # Output
             start_session_response = StartSessionResponse(
@@ -112,7 +116,7 @@ class SmokeServicer(vehicle_pose_detection_service_pb2_grpc.VehiclePoseDetection
             # Process 
             smoke_session: SmokeSession = self.sessions[session_id]
             detection_output = smoke_session.detect(frame_id, frame_image)
-            _, detection_output_projection = visualization(
+            _, _, detection_output_projection = visualization(
                 frame_image, 
                 smoke_session.K_3x4,
                 [DetectionInfo.from_array(detection) for detection in detection_output])

@@ -60,13 +60,30 @@ class DetectionInfo():
             2: "Pedestrian"
         }.get(self.detection_class)
 
-def get_camera_intrinsics():
+def get_camera_intrinsics(image_height, image_width):
+    offset_x = 12 # ???
+    offset_y = 15 # ???
+
+    required_image_height = 375
+    dependent_image_width = image_width * required_image_height / image_height
+
+    alpha = 721.
+    u = (dependent_image_width / 2 - offset_x)
+    v = (required_image_height / 2 - offset_y)
+    
     _K_3x4 = np.array(
         [
-            [721.5377,  0.,         609.5593,   44.85728],      # pylint: disable=bad-whitespace
-            [0.,        721.5377,   172.854,    .2163791],      # pylint: disable=bad-whitespace
-            [0.,        0.,         1.,         .002745884]     # pylint: disable=bad-whitespace
+            # kitti
+            #[721.5377,  0.,         609.5593,   44.85728],      # pylint: disable=bad-whitespace
+            #[0.,        721.5377,   172.854,    .2163791],      # pylint: disable=bad-whitespace
+            #[0.,        0.,         1.,         .002745884]     # pylint: disable=bad-whitespace
+        
+            # kitti (image height 375) but variable width
+            [alpha,     0.,         u,          .0], 
+            [0.,        alpha,      v,          .0], 
+            [0.,        0.,         1.,         .0]
         ], 
+        
         dtype=np.float32
     )
 

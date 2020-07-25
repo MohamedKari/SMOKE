@@ -11,6 +11,11 @@ from torchvision.transforms.functional import (
 class ReversiblePadding():
     
     def __init__(self, source_image: Image.Image, target_size: Union[Tuple[int], int]):
+        """
+        Args:
+            source_image: PIL Image
+            target_size: Tuple of ints (height, width) or single int for square target
+        """
         self.source_image = source_image
         self.target_size = target_size
         self.source_width, self.source_height = source_image.size
@@ -177,7 +182,7 @@ def fit(source_image: Image.Image, target_size: Union[Tuple[int], int], fitting_
                     0, 
                     int((target_height - underheight) / 2),
                     0,
-                    int((target_height - underheight) / 2) + + (target_width - underwidth) % 2 
+                    int((target_height - underheight) / 2) + (target_height - underheight) % 2 
                     ))
             
             box_xmin, box_ymin = 0, int((target_height - underheight) / 2)

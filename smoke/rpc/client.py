@@ -11,11 +11,6 @@ from .vehicle_pose_detection_service_pb2 import (
     StartSessionResponse, 
     DetectRequest, 
     DetectResponse,
-    Detection,
-    DetectionClass,
-    Box2D,
-    Box3D,
-    Box3DProjection,
     StopSessionRequest)
 
 from ..viz import visualization
@@ -102,12 +97,29 @@ class VehiclePoseDetectionClient():
                     
                     detection.box_3D.score))
 
-        viz_bytes, _ = visualization(frame_image, get_camera_intrinsics(), detection_infos)
-            
-        viz_bytesio = BytesIO(viz_bytes)
-            
-        viz_image = Image.open(viz_bytesio)
-        viz_image.show()
+
+        # TODO: The server resizes and pads (downsize, pad, process, upsize). Viz also resizes (downsize, pad, process, upsize). 
+        # Therefore, if this function would resize in the first line, we would improve lossiness by only _actually_ downsizing and then upsizing once.
+
+        # reversible_padding = ReversiblePadding(frame_image, (375, 1242))
+        # projection_viz_bytes, map_viz_bytes, _ = visualization(reversible_padding.get_padded_image(), get_camera_intrinsics(), detection_infos)
+        frame_width = frame_image.size[0]
+        frame_height = frame_image.size[1]
+        
+        desired_frame_height = 375
+        dependent_frame_width = int(frame_width * (375 / frame_height))
+
+        resized_frame_image = frame_image.resize((dependent_frame_width, desired_frame_height))    
+        projection_viz_bytes, map_viz_bytes, _ = visualization(resized_frame_image, get_camera_intrinsics(desired_frame_height, dependent_frame_width), detection_infos)
+        
+        projection_viz_bytesio = BytesIO(projection_viz_bytes)
+        projection_viz_image = Image.open(projection_viz_bytesio).resize((frame_width, frame_height))
+        # reversible_padding.revert_on_image(projection_viz_image).show()
+        projection_viz_image.show()
+
+        map_viz_bytesio = BytesIO(map_viz_bytes)
+        map_viz_image = Image.open(map_viz_bytesio)
+        map_viz_image.show()
 
         return detection_infos
 
