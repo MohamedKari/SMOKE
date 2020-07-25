@@ -1,6 +1,3 @@
-[submodule "3d-bounding-box-estimation-for-autonomous-driving"]
-	path = 3d-bounding-box-estimation-for-autonomous-driving
-	url = https://github.com/lzccccc/3d-bounding-box-estimation-for-autonomous-driving
 [submodule "smoke/data/datasets/evaluation/kitti/kitti_eval_offline"]
 	path = smoke/data/datasets/evaluation/kitti/kitti_eval
 	url = https://github.com/lzccccc/kitti_eval_offline
